@@ -18,6 +18,8 @@ import torch.nn.functional as F
 import numpy as np
 from future.utils import with_metaclass
 
+import torchist
+
 from .smoother_factory import SingleGaussianFourierSmoother
 
 
@@ -588,6 +590,23 @@ class MultiGaussianLNCCSimilarity(SimilarityMeasure):
         return mglncc
 
 
+class MISimilarity(SimilarityMeasure):
+
+    def __init__(self, spacing, params):
+        super(MISimilarity, self).__init__(spacing, params)
+
+    def compute_similarity_multiNC(self, I0, I1, I0Source=None, phi=None):
+        print(I0.shape, I1.shape)
+        img_stack = torch.hstack((I0, I1))
+        img_stack_t = torch.transpose(img_stack, 0, 1)
+        hgram = torchist.histogramdd(img_stack_t, 256)
+        pxy = hgram / hgram.sum()
+        px = pxy.sum(dim=1)
+        py = pxy.sum(dim=0)
+        px_py = px[:, None] * py[None, :]
+        nzs = pxy > 0
+        mi = (pxy[nzs] * (pxy[nzs] / px_py[nzs]).log()).sum()
+        return AdaptVal(mi)
 
 class SimilarityMeasureFactory(object):
     """
@@ -611,7 +630,8 @@ class SimilarityMeasureFactory(object):
             'sglncc':SingleGaussianLNCCSimilarity,
             'mglncc':MultiGaussianLNCCSimilarity,
             'omt': OptimalMassTransportSimilarity,
-            'ssd_single': SSDSingleImageSimilarity
+            'ssd_single': SSDSingleImageSimilarity,
+            'mi': MISimilarity
         }
         """currently implemented similiarity measures"""
 
