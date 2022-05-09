@@ -8,6 +8,7 @@ from __future__ import print_function
 # from builtins import str
 # from builtins import object
 import json
+import numpy as np
 
 
 class ParameterDict(object):
@@ -58,6 +59,15 @@ class ParameterDict(object):
         self.write_JSON(fileNames[0])
         self.write_JSON_comments(fileNames[1])
 
+    def __clean_dict(self, d):
+        for k, v in d.items():
+            if type(v) is dict:
+                d[k] = self.__clean_dict(v)
+                continue
+            if type(v) == np.int64:
+                d[k] = int(v)
+        return d
+
     def write_JSON(self, fileName,save_int=True):
         """
         Writes the JSON configuration to a file
@@ -69,7 +79,7 @@ class ParameterDict(object):
             if self.printSettings:
                 print('Writing parameter file = ' + fileName )
             if save_int:
-                json.dump(self.int, outfile, indent=4, sort_keys=True)
+                json.dump(self.__clean_dict(self.int), outfile, indent=4, sort_keys=True)
             else:
                 json.dump(self.ext, outfile, indent=4, sort_keys=True)
 
