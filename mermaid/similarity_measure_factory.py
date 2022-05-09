@@ -294,8 +294,8 @@ class NCCSimilarity(SimilarityMeasure):
         n_batch = I0.shape[0]
         dim = len(I0.shape[2:])
         input_shape = [I0.shape[0], I0.shape[1], -1]+[1]*dim
-        I0 = I0.view(*input_shape)
-        I1 = I1.view(*input_shape)
+        I0 = I0.reshape(*input_shape)
+        I1 = I1.reshape(*input_shape)
         I0mean = I0.mean(dim=2, keepdim=True)
         I1mean = I1.mean(dim=2, keepdim=True)
         I0_m_mean = I0-I0mean
