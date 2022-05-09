@@ -357,7 +357,7 @@ class RegistrationNetDisplacement(RegistrationNet):
         which directly estimate a deformation field.
         """
 
-    def __init__(self, sz, spacing, params):
+    def __init__(self, sz, spacing, params, compute_inverse_map):
         """
         Constructor
 
@@ -365,6 +365,7 @@ class RegistrationNetDisplacement(RegistrationNet):
         :param spacing: spatial spacing, e.g., [0.1,0.1,0.2]
         :param params: ParameterDict() object to hold general parameters
         """
+        # TODO add functionality of compute_inverse_map
         super(RegistrationNetDisplacement, self).__init__(sz, spacing, params)
 
         self.d = self.create_registration_parameters()
