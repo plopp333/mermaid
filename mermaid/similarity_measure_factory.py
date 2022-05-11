@@ -596,9 +596,8 @@ class MISimilarity(SimilarityMeasure):
         super(MISimilarity, self).__init__(spacing, params)
 
     def compute_similarity_multiNC(self, I0, I1, I0Source=None, phi=None):
-        print(I0.shape, I1.shape)
         img_stack = torch.hstack((I0, I1))
-        img_stack_t = torch.transpose(img_stack, 0, 1)
+        img_stack_t = torch.transpose(img_stack, 1, -1)
         hgram = torchist.histogramdd(img_stack_t, 256)
         pxy = hgram / hgram.sum()
         px = pxy.sum(dim=1)
